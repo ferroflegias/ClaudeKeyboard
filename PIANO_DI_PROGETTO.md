@@ -10,8 +10,7 @@ Tastiera personalizzata per iOS (italiano e inglese) che porta Claude dentro qua
 | Budget | Costo zero (o il più vicino possibile a zero) |
 | iPad | Non previsto |
 
-## Decisione aperta: come collegarsi a Claude
-Vedi sezione 2. Da questa scelta dipende il resto del piano.
+| Integrazione | **Opzione B** (app Claude + Comandi rapidi) come primo passo; tastiera con API (Opzione A) solo se servirà. Guida: [`comandi-rapidi/GUIDA.md`](comandi-rapidi/GUIDA.md) |
 
 ---
 
@@ -139,7 +138,7 @@ Senza App Store non servono privacy policy, recensione Apple né rispetto delle 
 ---
 
 ## 8. Prossimi passi
-1. Scegliere tra Opzione A, B o C.
-2. Confermare la disponibilità di un Mac.
-3. Se Opzione B/C: preparare i Comandi rapidi con i prompt.
-4. Se Opzione A/C: creare il progetto Xcode.
+1. ✅ Scelta l'Opzione B.
+2. Creare il comando "Claude Testo" seguendo `comandi-rapidi/GUIDA.md`.
+3. Usarlo per 1–2 settimane annotando azioni più usate e punti scomodi.
+4. Valutare se passare all'Opzione A (serve un Mac).
