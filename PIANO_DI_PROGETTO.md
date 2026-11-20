@@ -1,166 +1,145 @@
 # ClaudeKeyboard — Piano di progetto
 
-Tastiera personalizzata per iOS che porta Claude dentro qualsiasi app (Mail, Messaggi, WhatsApp, Slack, Note…): scrivi, selezioni e chiedi a Claude di riscrivere, correggere, tradurre o rispondere, senza cambiare app.
+Tastiera personalizzata per iOS (italiano e inglese) che porta Claude dentro qualsiasi app (Mail, Messaggi, WhatsApp…), per riscrivere, correggere, tradurre o rispondere senza cambiare app.
+
+## Decisioni prese
+| Tema | Decisione |
+|------|-----------|
+| Lingue tastiera | Italiano + Inglese |
+| Distribuzione | Solo uso personale, nessuna pubblicazione su App Store |
+| Budget | Costo zero (o il più vicino possibile a zero) |
+| iPad | Non previsto |
+
+## Decisione aperta: come collegarsi a Claude
+Vedi sezione 2. Da questa scelta dipende il resto del piano.
 
 ---
 
 ## 1. Obiettivi
-
 | # | Obiettivo | Misura di successo |
 |---|-----------|--------------------|
-| 1 | Usare Claude senza lasciare l'app in cui si scrive | Azione completa (seleziona → azione → inserisci) in < 3 tap |
-| 2 | Risposta percepita come veloce | Primo testo visibile in < 1,5 s (streaming) |
-| 3 | Tastiera usabile anche senza AI | Digitazione italiana completa (accenti, maiuscole, numeri, punteggiatura) |
-| 4 | Privacy chiara | Nessun testo salvato su server propri; invio a Claude solo su azione esplicita |
-
-**Fuori ambito (v1):** dettatura vocale (le estensioni tastiera non possono usare il microfono), lettura dell'intero contenuto della mail/chat (iOS espone solo il testo attorno al cursore), autocorrezione avanzata stile Apple.
+| 1 | Usare Claude senza lasciare l'app in cui si scrive | Azione completa in < 3 tap |
+| 2 | Tastiera usabile anche senza AI | Digitazione IT/EN completa (accenti, maiuscole, numeri, punteggiatura) |
+| 3 | Costo nullo o trascurabile | Nessun abbonamento a pagamento aggiuntivo |
+| 4 | Privacy | Il testo va a Claude solo su azione esplicita |
 
 ---
 
-## 2. Funzionalità
+## 2. Come collegarsi a Claude: le opzioni
 
-### MVP (v1.0)
-- **Tastiera QWERTY italiana**: maiuscole, numeri/simboli, accenti con pressione prolungata, tasto "globo" per cambiare tastiera, cancellazione continua, suggerimenti base (`UITextChecker` + `UILexicon`).
-- **Barra Claude** sopra i tasti con azioni rapide sul testo selezionato (o, in assenza di selezione, sul testo prima del cursore):
-  - ✏️ Migliora / correggi
-  - 🎩 Tono formale · 😊 Tono informale
-  - ✂️ Accorcia · ➕ Espandi
-  - 🌍 Traduci (IT ⇄ EN, lingua configurabile)
-  - 💬 **Chiedi a Claude**: campo libero ("scrivi una risposta che declina gentilmente l'invito")
-- **Anteprima del risultato** in streaming, con pulsanti *Sostituisci*, *Inserisci*, *Rigenera*, *Annulla*.
-- **App contenitore** (obbligatoria su iOS): onboarding per attivare la tastiera e l'"Accesso completo", configurazione chiave API, scelta lingua e modello.
+### Si può usare l'app Claude installata sull'iPhone?
+**Solo in parte.** L'app Claude per iOS offre un'azione **"Ask Claude"** (App Intent) utilizzabile da Comandi rapidi (Shortcuts), Siri, Spotlight e dal menu Condividi, e usa il piano del tuo account Claude (anche gratuito, entro i limiti d'uso). Però:
+- un'**estensione tastiera non può eseguire un Comando rapido né un App Intent e ricevere la risposta**: iOS non lo consente;
+- l'unica via è aprire l'app Comandi con un URL, ma una tastiera non può aprire URL in modo supportato (esistono trucchi poco affidabili) e il ritorno porterebbe comunque fuori dall'app in cui stai scrivendo;
+- usare le credenziali di login di claude.ai dentro un'app propria non è un'integrazione supportata (contro i termini d'uso, e si rompe facilmente).
 
-### v1.1 – v1.2
-- **Rispondi a…**: incolla dagli appunti il messaggio ricevuto e genera una risposta.
-- **Preset personalizzati** (prompt salvati: "firma aziendale", "risposta cliente"…), sincronizzati via App Group.
-- **Profilo di stile**: istruzioni persistenti ("dammi del tu", "firma sempre Marco").
-- Cronologia locale delle ultime generazioni (solo sul dispositivo, cancellabile).
-- Tema chiaro/scuro, feedback aptico, layout per iPad.
+Conclusione: **per avere Claude *dentro* la tastiera serve l'API.** Con l'app Claude si può fare un flusso alternativo, senza costi ma con meno integrazione.
 
-### v2 (eventuale)
-- Backend proprio con account (Sign in with Apple) e abbonamento in-app, per distribuire l'app senza che l'utente debba avere una chiave API.
-- Più lingue di tastiera; suggerimenti contestuali di completamento.
+### Opzione A — Tastiera con API (integrazione completa)
+- La tastiera chiama direttamente l'API Anthropic (`POST /v1/messages`, streaming).
+- **Costo:** l'API è a consumo e separata dagli abbonamenti Claude (non è inclusa né nel piano gratuito né in Pro). Serve una ricarica iniziale minima di credito (pochi dollari) sulla Anthropic Console.
+- **Stima d'uso** con **Claude Haiku 5.5** ($0,10 / $0,50 per milione di token in ingresso/uscita): una riscrittura tipica costa circa **$0,0003** → ~1.000 azioni ≈ $0,30. Una ricarica minima dura anni con uso personale.
+- Modello configurabile: Claude Opus 5.5 dà qualità superiore ma costa circa 30–40 volte di più per azione (ancora circa 1 centesimo).
+- Imposta un **limite di spesa** nella Console per evitare sorprese.
+
+### Opzione B — App Claude + Comandi rapidi (zero costi, zero o poco codice)
+- Si creano dei Comandi rapidi ("Migliora testo", "Traduci in inglese", "Rendi formale"…) che usano l'azione **Ask Claude** con un prompt fisso.
+- Si avviano su testo selezionato dal **menu Condividi**, oppure dal **Tocco posteriore** (Impostazioni › Accessibilità › Tocco) o dal tasto Azione, leggendo il testo dagli appunti.
+- Il risultato viene copiato negli appunti; si incolla nel campo.
+- **Pro:** gratuito, usa il tuo account Claude, prototipo pronto in 15 minuti, nessuna build Xcode.
+- **Contro:** più passaggi (seleziona → condividi/tocco → incolla), meno fluido; dipende da come l'app Claude esegue l'azione (alcune versioni potrebbero aprire l'app).
+- La tastiera personalizzata in questo scenario è facoltativa: al massimo un tasto "Incolla risultato" e preset di prompt.
+
+### Opzione C — Ibrida (consigliata da provare)
+1. Partire subito con l'**Opzione B** per capire quali azioni usi davvero (costo zero).
+2. Se il flusso con gli appunti risulta scomodo, sviluppare la tastiera con l'**Opzione A** usando Haiku 5.5, con spesa di pochi centesimi al mese.
 
 ---
 
-## 3. Vincoli della piattaforma iOS (da tenere presenti dal giorno 1)
+## 3. Vincoli di sviluppo a costo zero
 
 | Vincolo | Impatto | Soluzione |
 |---------|---------|-----------|
-| Rete disponibile solo con **"Accesso completo"** (`RequestsOpenAccess = YES`) | Senza, niente Claude | Onboarding che spiega perché; la tastiera deve comunque funzionare senza (requisito App Store 4.4.1) e mostrare un avviso nella barra Claude |
-| **Limite di memoria** dell'estensione (~50–70 MB) | Crash se si usa troppa RAM | UI leggera (UIKit o SwiftUI minimale), niente librerie pesanti, nessun modello locale |
-| Accesso al testo solo tramite `textDocumentProxy` (testo prima/dopo il cursore, selezione) | Non si legge l'intera mail | Lavorare su selezione / testo vicino al cursore; "Rispondi a…" via appunti |
-| Campi password e tastierini numerici | iOS forza la tastiera di sistema | Nessuna azione necessaria |
+| Serve un **Mac con Xcode** (gratuito) | Senza Mac non si compila | Usare un Mac proprio o in prestito |
+| **Apple ID gratuito** (senza Developer Program da 99 €/anno) | L'app installata **scade dopo 7 giorni** e va reinstallata da Xcode | Reinstallazione settimanale (1 minuto con iPhone collegato) |
+| Limiti dell'account gratuito su App ID e capability (es. App Groups) | Configurazione condivisa tra app e tastiera potrebbe dare problemi | Progetto che **non dipende da App Groups**: chiave API in un file di configurazione locale escluso da git, impostazioni nella tastiera stessa |
+| Rete solo con **"Accesso completo"** | Senza, niente Claude | Attivarlo una volta nelle Impostazioni |
+| Memoria dell'estensione limitata (~50–70 MB) | Crash se si esagera | UI in UIKit, nessuna libreria pesante |
+| Testo leggibile solo attorno al cursore (`textDocumentProxy`) | Non si legge l'intera mail | Lavorare su selezione / testo prima del cursore; "Rispondi a…" via appunti |
 | Niente microfono nelle estensioni | No dettatura | Fuori ambito |
-| L'estensione è un processo separato dall'app | Impostazioni e chiave condivise | **App Group** (impostazioni) + **Keychain condiviso** (chiave API) |
-| Build e firma richiedono **macOS + Xcode** e un Apple Developer Program (99 €/anno) | Non compilabile in ambienti Linux | Sviluppo su Mac; test su dispositivo reale |
+
+Senza App Store non servono privacy policy, recensione Apple né rispetto delle linee guida di pubblicazione.
 
 ---
 
-## 4. Architettura
+## 4. Funzionalità (Opzione A)
+
+### MVP
+- **Tastiera QWERTY bilingue IT/EN**
+  - Tasto lingua per passare da italiano a inglese (influenza suggerimenti e correttore).
+  - Accenti con pressione prolungata (à è é ì ò ù; tasto rapido per "è" in italiano).
+  - Maiuscole, blocco maiuscole, numeri/simboli, cancellazione continua, tasto globo.
+  - Suggerimenti di parola con `UITextChecker` nella lingua attiva.
+- **Barra Claude** sul testo selezionato (o sul testo prima del cursore):
+  - Migliora/correggi · Formale · Informale · Accorcia · Espandi · Traduci IT⇄EN
+  - **Chiedi a Claude**: richiesta libera
+- **Anteprima in streaming** con *Sostituisci*, *Inserisci*, *Rigenera*, *Annulla*.
+- **App contenitore minima**: istruzioni per attivare tastiera e Accesso completo.
+
+### Dopo l'MVP
+- "Rispondi a…" dal messaggio copiato negli appunti.
+- Preset di prompt personali e profilo di stile ("dammi del tu", firma).
+- Cronologia locale delle ultime generazioni.
+
+---
+
+## 5. Architettura (Opzione A)
 
 ```
-┌────────────────────────── iPhone ──────────────────────────┐
-│                                                             │
-│  App contenitore (SwiftUI)        Estensione tastiera       │
-│  - Onboarding                     (UIInputViewController)   │
-│  - Impostazioni, preset           - Layout tasti            │
-│  - Inserimento chiave API         - Barra Claude + anteprima│
-│            │                                │               │
-│            └──── App Group (UserDefaults) ──┤               │
-│            └──── Keychain condiviso ────────┤               │
-│                                             │               │
-│                  ClaudeKit (Swift Package condiviso)        │
-│                  - Client HTTP + streaming SSE              │
-│                  - Prompt delle azioni                      │
-└─────────────────────────────────────────────┼───────────────┘
-                                              │ HTTPS
-                       MVP: diretto ──────────┤
-                       v2: tramite backend ───┤
-                                              ▼
-                              Claude API (POST /v1/messages)
+┌──────────────────── iPhone ────────────────────┐
+│  App contenitore      Estensione tastiera      │
+│  (istruzioni)         - Tasti IT/EN            │
+│                       - Barra Claude/anteprima │
+│                       - ClaudeClient (HTTP+SSE)│
+└──────────────────────────────┼─────────────────┘
+                               │ HTTPS
+                               ▼
+                 Claude API (POST /v1/messages)
 ```
 
-### Moduli
-1. **KeyboardUI** — layout dei tasti, gestione tocchi, pressione prolungata, cambio pagine, suggerimenti.
-2. **ClaudeBar** — azioni rapide, campo "Chiedi", pannello anteprima con streaming.
-3. **ClaudeKit** (Swift Package) — chiamata all'API Messages via `URLSession` con streaming SSE (`URLSession.bytes`), gestione errori/ritentativi, cancellazione della richiesta.
-4. **Settings/Storage** — App Group + Keychain, modelli dati dei preset.
-5. **HostApp** — onboarding, impostazioni, privacy policy.
-
-### Integrazione con Claude
-- **Endpoint:** `POST https://api.anthropic.com/v1/messages` con `stream: true`. Non esiste un SDK Anthropic ufficiale per Swift: si usa HTTP diretto (`URLSession`), con un piccolo client interno.
-- **Modello predefinito:** `claude-opus-5-5`, con `output_config.effort: "low"` per le azioni rapide (riscrittura, traduzione) così da ridurre la latenza; modello e effort configurabili nelle impostazioni (es. Claude Haiku 5.5 per chi preferisce massima velocità e minor costo — da valutare con test reali).
-- **Prompt:** un system prompt stabile per tutte le azioni ("Sei un assistente di scrittura dentro una tastiera. Restituisci solo il testo finale, senza commenti né virgolette…") + istruzione specifica dell'azione + testo dell'utente. System prompt identico per sfruttare il **prompt caching**.
-- **`max_tokens`** moderato (es. 2.000) — i testi da tastiera sono brevi.
-- **Gestione risposte:** controllare sempre `stop_reason` (incluso `refusal`, da mostrare con un messaggio chiaro), errori 401 (chiave errata), 429 (limiti), 529/5xx (ritentare con backoff), timeout di rete.
-- **Cancellazione:** se l'utente chiude il pannello o cambia app, la richiesta viene annullata.
-
-### Gestione della chiave API
-- **MVP (uso personale / TestFlight):** l'utente inserisce la propria chiave Anthropic nell'app contenitore; salvata nel **Keychain condiviso**, mai in UserDefaults né nel codice.
-- **v2 (App Store pubblico):** backend proxy leggero (es. Cloudflare Workers / AWS Lambda) che custodisce la chiave, autentica l'utente (Sign in with Apple), applica limiti d'uso e verifica l'abbonamento (StoreKit 2). Nessuna chiave nell'app.
+- **Client:** `URLSession` con streaming SSE (non esiste un SDK Anthropic ufficiale per Swift).
+- **Modello predefinito:** `claude-haiku-5-5` con effort basso, per costo minimo e velocità; Opus 5.5 selezionabile.
+- **Prompt:** system prompt fisso ("Sei un assistente di scrittura in una tastiera. Restituisci solo il testo finale…") + istruzione dell'azione + testo; stessa lingua del testo salvo traduzione.
+- **Errori:** gestire `stop_reason` (incluso `refusal`), 401 chiave errata, 429/5xx con nuovo tentativo, rete assente.
+- **Chiave API:** in `Secrets.xcconfig` escluso da git e compilata nell'app (accettabile perché l'app non viene distribuita); alternativa: Keychain.
 
 ---
 
-## 5. Privacy e conformità
-- Il testo viene inviato a Claude **solo** quando l'utente tocca un'azione; nessun keylogging, nessuna telemetria sul testo digitato.
-- Nessun salvataggio lato server (MVP: nessun server). Cronologia solo locale e opzionale.
-- Privacy policy e dichiarazioni "App Privacy" su App Store Connect coerenti con l'invio dei dati ad Anthropic.
-- Requisiti App Store per tastiere (linea guida 4.4.1): tasto per passare alla tastiera successiva, funzionamento senza accesso completo, raccolta dati solo per migliorare la tastiera.
-- Accessibilità: VoiceOver sui tasti e sulla barra Claude, Dynamic Type nell'app contenitore.
+## 6. Piano di lavoro (Opzione A, 1 persona, tempo libero)
+
+| Fase | Durata | Attività | Risultato |
+|------|--------|----------|-----------|
+| 0. Prova Opzione B | 1 sera | Comandi rapidi con "Ask Claude" | Capire quali azioni servono davvero |
+| 1. Setup | 1–2 sere | Progetto Xcode (app + estensione), firma con Apple ID gratuito, installazione su iPhone | Tastiera vuota funzionante |
+| 2. Tastiera base | 1–2 sett. | Layout, accenti, simboli, cambio lingua IT/EN, suggerimenti | Tastiera usabile ogni giorno |
+| 3. Client Claude | 3–4 sere | Chiamata in streaming, errori, annullamento | Collegamento funzionante |
+| 4. Barra Claude | 1 sett. | Azioni rapide, "Chiedi", anteprima, sostituzione testo | **MVP** |
+| 5. Rifinitura | continuo | Test in Mail/WhatsApp/Messaggi, memoria, preset | Uso quotidiano |
 
 ---
 
-## 6. Piano di lavoro
-
-Stima indicativa per **1 sviluppatore iOS**, part-time esclusa.
-
-| Fase | Durata | Attività | Deliverable |
-|------|--------|----------|-------------|
-| **0. Setup** | 2–3 gg | Progetto Xcode (app + Keyboard Extension), App Group, Keychain sharing, Swift Package `ClaudeKit`, repo e CI (Xcode Cloud o GitHub Actions su macOS) | Progetto che compila e installa una tastiera vuota |
-| **1. Spike tecnico** | 3 gg | Chiamata in streaming dall'estensione, misura memoria e latenza, prova di `textDocumentProxy` in Mail/Messaggi/WhatsApp | Report rischi; conferma fattibilità |
-| **2. Tastiera base** | 2 sett. | Layout IT, maiuscole, simboli, accenti, cancellazione, cambio tastiera, suggerimenti base, dark mode | Tastiera usabile quotidianamente |
-| **3. ClaudeKit** | 1 sett. | Client HTTP + SSE, modelli richiesta/risposta, errori, ritentativi, cancellazione, test unitari con risposte simulate | Libreria testata |
-| **4. Barra Claude** | 2 sett. | Azioni rapide, campo "Chiedi", anteprima in streaming, Sostituisci/Inserisci/Rigenera, gestione selezione | **MVP funzionante** |
-| **5. App contenitore** | 1 sett. | Onboarding guidato, inserimento chiave, impostazioni, privacy policy | App completa |
-| **6. Test e rifinitura** | 1–2 sett. | Test su più app e dispositivi, memoria, rete lenta/assente, accessibilità, TestFlight con 5–10 tester | Beta su TestFlight |
-| **7. v1.1** | 2 sett. | "Rispondi a…", preset, profilo di stile, cronologia | Release 1.1 |
-| **8. v2 (opzionale)** | 3–4 sett. | Backend proxy, Sign in with Apple, abbonamento StoreKit 2, invio ad App Review | Pubblicazione App Store |
-
-**Totale MVP su TestFlight: ~8–9 settimane. Con v2 pubblica: ~14–15 settimane.**
+## 7. Rischi
+| Rischio | Mitigazione |
+|---------|-------------|
+| Reinstallazione ogni 7 giorni scomoda | Promemoria settimanale; eventuale Developer Program in futuro |
+| Limiti account gratuito su capability | Architettura senza App Groups |
+| Memoria dell'estensione | UI leggera, profilazione con Instruments |
+| Spesa API imprevista | Haiku 5.5 di default + limite di spesa nella Console |
 
 ---
 
-## 7. Rischi principali
-
-| Rischio | Probabilità | Mitigazione |
-|---------|-------------|-------------|
-| Superamento limite memoria dell'estensione | Media | Profilazione con Instruments fin dallo spike; UI minimale |
-| Latenza percepita alta | Media | Streaming, effort basso, prompt caching, modello configurabile |
-| Utenti diffidenti verso "Accesso completo" | Alta | Onboarding trasparente, privacy policy chiara, tastiera utile anche senza |
-| Comportamento diverso di `textDocumentProxy` tra app | Media | Matrice di test (Mail, Messaggi, WhatsApp, Gmail, Outlook, Slack, Note) |
-| Rifiuto in App Review | Media | Rispetto linea guida 4.4.1; niente chiave API nel binario |
-| Costi API (in v2 a carico tuo) | Media | Limiti per utente nel backend, abbonamento, monitoraggio consumi |
-
----
-
-## 8. Strumenti e prerequisiti
-- Mac con Xcode recente, iPhone di test, account **Apple Developer Program**.
-- Account **Anthropic Console** con chiave API e limiti di spesa impostati.
-- Swift 5.10+/6, SwiftUI (app) + UIKit (tasti, per prestazioni), deployment target iOS 17+.
-- Nessuna dipendenza esterna obbligatoria.
-
----
-
-## 9. Decisioni aperte
-1. **Distribuzione:** uso personale/TestFlight con chiave propria (più semplice) o App Store pubblico con backend e abbonamento?
-2. **Modello predefinito:** Claude Opus 5.5 con effort basso vs. Claude Haiku 5.5 (più rapido ed economico) — decidere dopo lo spike misurando qualità e latenza in italiano.
-3. **Lingue della tastiera** oltre all'italiano nella v1.
-4. **iPad** nella v1 o successivamente.
-
----
-
-## 10. Prossimi passi
-1. Rispondere alle decisioni aperte (soprattutto la n. 1).
-2. Creare il progetto Xcode (Fase 0) e la struttura del repository.
-3. Eseguire lo spike tecnico (Fase 1) e aggiornare questo piano con i risultati.
+## 8. Prossimi passi
+1. Scegliere tra Opzione A, B o C.
+2. Confermare la disponibilità di un Mac.
+3. Se Opzione B/C: preparare i Comandi rapidi con i prompt.
+4. Se Opzione A/C: creare il progetto Xcode.
