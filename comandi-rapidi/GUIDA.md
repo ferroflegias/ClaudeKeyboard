@@ -1,6 +1,6 @@
 # Claude Testo — Comando rapido per iPhone
 
-Un unico Comando rapido con un menu di azioni (migliora, cambia tono, traduci, rispondi…).
+Un unico Comando rapido con un menu di azioni (migliora, cambia tono, riassumi, traduci IT/EN/ES…).
 Usa l'app Claude già installata e il tuo account: **nessun costo, nessuna API, nessun codice**.
 
 **Requisiti:** iOS 18 o successivo; app Claude installata e con accesso effettuato.
@@ -34,11 +34,10 @@ Aggiungi le azioni nell'ordine (usa la barra di ricerca in basso per trovarle):
 | ✏️ Migliora | `Correggi errori di ortografia, grammatica e punteggiatura e migliora la scorrevolezza, mantenendo significato, tono e lingua originali.` |
 | 🎩 Più formale | `Riscrivi il testo con un tono più formale e professionale, adatto a una mail di lavoro. Mantieni la lingua originale.` |
 | 😊 Più informale | `Riscrivi il testo con un tono più informale, cordiale e naturale. Mantieni la lingua originale.` |
-| ✂️ Accorcia | `Riscrivi il testo in modo più breve e diretto, mantenendo tutte le informazioni importanti. Mantieni la lingua originale.` |
-| ➕ Espandi | `Sviluppa il testo in modo più completo e articolato, senza inventare fatti nuovi. Mantieni la lingua originale.` |
+| 📝 Riassumi | **Prima** delle due azioni: **Crea Markdown da rich text** (input: variabile `Testo`) → **Imposta variabile** `Testo` = *Markdown*. Poi **Testo**: `Il testo può essere in Markdown, copiato da una pagina web: ignora menu, pulsanti, pubblicità e note a piè di pagina. Riassumi in italiano i contenuti principali: una frase iniziale con il punto chiave, poi da 3 a 6 punti elenco che iniziano con "• ". Non usare la sintassi Markdown nella risposta (niente #, ** o link).` |
 | 🇬🇧 Traduci in inglese | `Traduci il testo in inglese naturale, mantenendo tono e registro.` |
 | 🇮🇹 Traduci in italiano | `Traduci il testo in italiano naturale, mantenendo tono e registro.` |
-| 💬 Rispondi | `Il testo è un messaggio che ho ricevuto. Scrivi una mia risposta breve, cortese e pertinente, nella stessa lingua del messaggio.` |
+| 🇪🇸 Traduci in spagnolo | `Traduci il testo in spagnolo naturale, mantenendo tono e registro.` |
 | ❓ Chiedi a Claude | Qui invece: **Chiedi input** (tipo *Testo*, domanda `Cosa devo scrivere?`), poi **Imposta variabile** `Istruzione` = *Input fornito* |
 
 ## Passo 4 — Componi la richiesta e chiedi a Claude
